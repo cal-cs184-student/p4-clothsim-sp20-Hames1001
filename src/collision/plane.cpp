@@ -13,6 +13,14 @@ using namespace CGL;
 
 void Plane::collide(PointMass &pm) {
   // TODO (Part 3): Handle collisions with planes.
+    
+    if (dot(pm.position, normal) < 0) {
+        double tan = dot((point - pm.position), normal) / dot(normal, normal);
+        Vector3D offset = tan * normal + pm.position;
+        Vector3D planePosition = offset - pm.last_position;
+        Vector3D correct = planePosition + (normal * SURFACE_OFFSET);
+        pm.position = pm.last_position + correct * (1 - friction);
+    }
 
 }
 

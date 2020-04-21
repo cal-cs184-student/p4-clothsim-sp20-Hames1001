@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>  
+    div.padded {  
+      padding-top: 0px;  
+      padding-right: 100px;  
+      padding-bottom: 0.25in;  
+      padding-left: 100px;  
+    }  
+  </style> 
+<title>James Razo |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+<br />
+<h1 align="middle">Assignment 4: Cloth Simulation</h1>
+    <h2 align="middle">James Razo</h2>
+
+    <div class="padded">
+        <p>One of the main aspects to computer graphics is to be able to display and observe some of the physical movements of
+            an object. In this project I cover some of the physical components behind the simulations that occur in the real world.
+            In this case my main object involved using a cloth to portray the actions involved when it falls onto a surface. This is made realistical by using springs and point masses to resolve the physical effects or to be able to handle collisions with itself and another object. 
+        </p>
+
+    <h2 align="middle">Part 1: Springs and Masses</h2>
+        <p>This part consisted of creating a two dimensional grid with point mass and spring components. Ontop of creating the 
+        springs from one point to another, I implemented some constraints that mimic some of the realistic movements of a cloth. 
+        Such components involved were shearing, bending, and structural constraints. To add these constriants it involved
+        scanning through the grid of masses that I created and considering all the possible point masses around the current index. To 
+        determine a structural constraint I consider the point mass to the left and above from the current point mass. Shearing 
+        constraints are considered to be diagonal upper left and upper right from the current point mass. Bending constraints are
+        determined from two the left and two above from the current point mass. I check for out bounds with all these constraints to 
+        confirm that I am dealing with point mass objects. Down below I portray a wirefram with no shearing constraint but all other
+        constraints are enabled. This gives a wireframe of diagonals since we have removed the structural and bending. There is 
+        image with only shearing constraint enabled and this removes the diagonal springs from the wireframe. The last image is of 
+        constraints enabled.  </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/noShearingConstraint.png" width="480px" />
+                    <figcaption align="middle">shearing disabled, bending/structural enabled</figcaption>
+                    <td align="middle">
+                    <img src="images/shearingConstraint.png" width="480px" />
+                    <figcaption align="middle">only shearing enabled</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/allConstraints.png" width="480px" />
+                    <figcaption align="middle">all constraints enabled</figcaption>
+                </tr>
+            </table>
+        </div>
+        
+    <h2 align="middle">Part 2: Simulation via Numerical Integration</h2>
+        <p> This part involved the simulation of the cloth for some time delta t. My implementation involved iterating through the 
+        point masses to calculation the external force on each point mass. Once I readjusted the actual force on each point, the next 
+        step was to perform Hooke's law for any springs that were not a structural constraint. This involved iterating through the list
+        of springs that I created in part one. Once the force of the springs and the point mass have been readjusted, these values were
+        stored inside the point mass objects. In order to accurately capture the simulation of the cloth I used verlet integration to 
+        determine the new position of each individual point mass for each time step. Below I display the equation used to compute the
+        new position of the point mass.  </p>
+         <br>
+         <p>Here is the equation for Hooke's law. k_s is the spring constant, p_a and p_b are positions of two different point masses,
+         and l is the springs rest length. </p>
+        <p align="middle"><pre align="middle">F_s = k_s * (||p_a - p_b|| - l) </pre></p>
+        <br>
+
+        <p>Verlet Integration: Here t + dt is the new time step, t is the current time step, x is used as position, d is the damping
+        term, velocity is determined by the current position minus the last position, and acceleration is a_t * delta squared.   </p>
+        <p align="middle"><pre align="middle">x_(t + dt) = x_t + (1 - d)*(x_t - x_(t-dt)) + a_t * dt^2  </pre></p>
+        <br>
+        <p>Below are images of a cloth's simulation. We see the cloth at a rest state, all of the parameters are set to create a 
+        smooth simulation of the cloth's midpoint dropping down. When I change the springs constant and leave every other parameter 
+        unchanged, we see that at a low k_s there is an upward force after the cloth hits the lowest point when falling. You can see
+        the tension on all four corners. However, with a high k_s we have a smoother simulation and no tension. With a low density 
+        the same smooth effects are created but if we raise the density the cloth seems to be falling forever. With a lower damping
+        parameter there is no ristriction on the cloth. Therefore, you see this irradical unrealistic behavior of the cloth bouncing 
+        upwards after falling. This is different to a higher damping which produces the smooth effects but with no tension and no 
+        bouncing effect which is also unrealistic.  </p>
+
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/restStateFacingDown.png" width="480px" />
+                    <figcaption align="middle">Cloth at rest state</figcaption>
+                    <td align="middle">
+                    <img src="images/restStateSideways.png" width="480px" />
+                    <figcaption align="middle">cloth at rest state sideways</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/lowKS.png" width="480px" />
+                    <figcaption align="middle">low spring constant (k_s)</figcaption>
+                    <td align="middle">
+                    <img src="images/highKS.png" width="480px" />
+                    <figcaption align="middle">high spring constant (k_s)</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/lowDensity.png" width="480px" />
+                    <figcaption align="middle">low density</figcaption>
+                    <td align="middle">
+                    <img src="images/highDensity.png" width="480px" />
+                    <figcaption align="middle">high density</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/lowDamping.png" width="480px" />
+                    <figcaption align="middle">low damping</figcaption>
+                    <td align="middle">
+                    <img src="images/highDamping.png" width="480px" />
+                    <figcaption align="middle">high damping</figcaption>
+                </tr>
+            </table>
+        </div>
+    <h2 align="middle">Part 3: Handling Collisions with other Objects</h2>
+        <p>In this part I adjusted the cloth's behavior to follow the real interactions between two objects. For the first part I had
+            the cloth fall onto a sphere and computed the new position for the cloth. This was done by finding the tangent point 
+            between a point mass position and the sphere's origin. Once that was found I corrected the position of the cloth by taking 
+            into account the friction between the two objects. This part acquired the following results of a cloth ontop of a sphere and on the plane. We see that with a spring constant of 5000 there is a normal smooth behavior when the cloth comes in 
+            contact with the sphere. However, at 500 the cloth seems to stretch further downwards into the sphere and with a spring 
+            constant of 50000 the cloth looks stiff compared to the other two images. 
+        </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/5000KS.png" width="480px" />
+                    <figcaption align="middle">k_s = 5000 </figcaption>
+                    <td align="middle">
+                    <img src="images/500KS.png" width="480px" />
+                    <figcaption align="middle">k_s = 500</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/50000KS.png" width="480px" />
+                    <figcaption align="middle">k_s = 50000KS</figcaption>
+                </tr>
+                <br> 
+                 <tr>
+                    <td align="middle">
+                    <img src="images/planeRestRed.png" width="480px" />
+                    <figcaption align="middle">cloth at rest on a plane</figcaption>
+                    <td align="middle">
+                    <img src="images/planeRestBlue.png" width="480px" />
+                    <figcaption align="middle">cloth at rest on a plane</figcaption>
+                </tr>
+            </table>
+        </div>
+    <h2 align="middle">Part 4: Handling Self-Collisions</h2>
+        <p> To create the self collision between the cloth's point masses I had to iterate over all the possible combinations of 
+            pairs of point masses to apply the correct forces acting on them. Therefore, I used a hash map and stored points depending 
+            on their hashing values. In this case I decided that my hashing position was going to be the value of coordinates
+            tP.y * tP.z + tP.x. Where tP.x, tP.y, tP.z is the position of the point mass modulated over the width, height, and 
+            max(width, height) respectfully. With these positions stored I am able to accomadate for the forces between point masses 
+            in linear time. All that was left to do was iterate through the point masses that shared the same hash position and check 
+            if the distance between the current point mass and the candidate was a certain amount of distance within a given parameter.
+            Down below are the results of the cloth colliding and folding with itself upon impact with the plane. When varying the 
+            density and spring constant we see a change of behavior with the cloth's self-collision. With a lower k_s the cloth is a 
+            lot more compacted then when we have a higher k_s the cloth wanders around the plane loosely. You can actually see that it 
+            rolls on itself in the high k_s value side view. Upon changing the density we see that a low density produces similar 
+            results to the cloth at rest image but with a higher density the cloth is compacted togetheras well. 
+        </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/oneFourth.png" width="480px" />
+                    <figcaption align="middle">beginning of impact </figcaption>
+                    <td align="middle">
+                    <img src="images/twoFourth.png" width="480px" />
+                    <figcaption align="middle">two fourths of the way</figcaption>
+                </tr>
+                <br> 
+                <tr>
+                    <td align="middle">
+                    <img src="images/threeFourth.png" width="480px" />
+                    <figcaption align="middle">three fourths of the way</figcaption>
+                    <td align="middle">
+                    <img src="images/fourFourth.png" width="480px" />
+                    <figcaption align="middle">cloth at rest</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/oneFourth.png" width="480px" />
+                    <figcaption align="middle">low k_s value </figcaption>
+                    <td align="middle">
+                    <img src="images/twoFourth.png" width="480px" />
+                    <figcaption align="middle">high k_s value</figcaption>
+                </tr>
+                <br> 
+                <tr>
+                    <td align="middle">
+                    <img src="images/threeFourth.png" width="480px" />
+                    <figcaption align="middle">high k_s value side view</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/lowDenseCollide.png" width="480px" />
+                    <figcaption align="middle">low density </figcaption>
+                    <td align="middle">
+                    <img src="images/highDenseCollide.png" width="480px" />
+                    <figcaption align="middle">high density</figcaption>
+                </tr>
+            </table>
+        </div>
+    <h2 align="middle">Part 5: Shaders</h2>
+        <p> This portion of the project combined the shader programs by using opengl. The shaders programs consists of a .frag and 
+            .vert files which are used to piece together the final output color for a scene. In this case the .vert file reads all 
+            vertices and writes a corresponding interpolated color by using barycentric coordinates. While the .frag file reads these 
+            interpolated values and writes to every pixel a final color. For this part I created 5 different types of shaders. They were a diffuse shader, a Blinn-Phong shader, texture mapping, displacement and bump mapping, and finally a mirror shader. 
+            The Blinn-phong shader displaced below is how it will look like if I only output the ambient, specular, and diffuse components individually. Combing these three effects together produces the Blinn-Phong effect by summing over the three 
+            different vectors produced from each effect. 
+        </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/ambientSphere.png" width="480px" />
+                    <figcaption align="middle">Ambient Component </figcaption>
+                    <td align="middle">
+                    <img src="images/ambientCloth.png" width="480px" />
+                    <figcaption align="middle">Ambient Component</figcaption>
+                </tr>
+                <br> 
+                <tr>
+                    <td align="middle">
+                    <img src="images/diffuseSphere.png" width="480px" />
+                    <figcaption align="middle">Diffuse Component</figcaption>
+                    <td align="middle">
+                    <img src="images/diffuseCloth.png" width="480px" />
+                    <figcaption align="middle">Diffuse Component</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/specularSphere.png" width="480px" />
+                    <figcaption align="middle">Specular Component</figcaption>
+                    <td align="middle">
+                    <img src="images/specularCloth.png" width="480px" />
+                    <figcaption align="middle">Specular Component</figcaption>
+                </tr>
+                <br> 
+                <tr>
+                    <td align="middle">
+                    <img src="images/BPSphere.png" width="480px" />
+                    <figcaption align="middle">Blinn-Phong Component</figcaption>
+                    <td align="middle">
+                    <img src="images/BPCloth.png" width="480px" />
+                    <figcaption align="middle">Blinn-Phong Component</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/texSphere.png" width="480px" />
+                    <figcaption align="middle">Texture Mapping</figcaption>
+                    <td align="middle">
+                    <img src="images/texCloth.png" width="480px" />
+                    <figcaption align="middle">Texture Mapping</figcaption>
+                </tr>
+            </table>
+        </div>
+        <br> 
+        <p>
+            To create the bump mapping effects I calculated for the normal vector displaced in model space to gain the bump effects. 
+            This required that I use the texture passed in on the uv coordinates given to solve for dU and dV which were components of 
+            the local space normal. To solve for dU, the texture space one ahead of coordinate u was needed to calculate the overall 
+            texture for the point. Same was done for dV in terms of v. However, displacement mapping only required to use the current 
+            position plus the normal passed in times the texture space of uv. Which gives a oddly shaped sphere in this case. Here are 
+            the two different mappings. Furthermore, adjusting the sphere's mesh coarseness with -o 16 -a 16 and -o 128 -a 128 aquires 
+            the following results.
+        </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/bumpSphere.png" width="480px" />
+                    <figcaption align="middle">Bumping Component </figcaption>
+                    <td align="middle">
+                    <img src="images/bumpCloth.png" width="480px" />
+                    <figcaption align="middle">Bumping Component</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/displacementSphere.png" width="480px" />
+                    <figcaption align="middle">Displacement Component </figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/Dis16.png" width="480px" />
+                    <figcaption align="middle">Displacement Component -o 16 -a 16</figcaption>
+                    <td align="middle">
+                    <img src="images/Bump16.png" width="480px" />
+                    <figcaption align="middle">Bumping Component -o 16 -a 16</figcaption>
+                </tr>
+                <br>
+                <tr>
+                    <td align="middle">
+                    <img src="images/Dis128.png" width="480px" />
+                    <figcaption align="middle">Displacement Component -o 128 -a 128</figcaption>
+                    <td align="middle">
+                    <img src="images/Bump128.png" width="480px" />
+                    <figcaption align="middle">Bumping Component-o 128 -a 128</figcaption>
+                </tr>
+            </table>
+        </div>
+        <br>
+        <p>
+            The last shader created is the mirror shader and this is the overall result.
+        </p>
+        <br>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/mirrorSphere.png" width="480px" />
+                    <figcaption align="middle">Mirror Component </figcaption>
+                    <td align="middle">
+                    <img src="images/mirrorCloth.png" width="480px" />
+                    <figcaption align="middle">Mirror Component </figcaption>
+                </tr>
+            </table>
+        </div>
+
+</div>
+</body>
+</html>
+
+
+
+
