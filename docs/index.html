@@ -21,7 +21,9 @@
     <div class="padded">
         <p>One of the main aspects to computer graphics is to be able to display and observe some of the physical movements of
             an object. In this project I cover some of the physical components behind the simulations that occur in the real world.
-            In this case my main object involved using a cloth to portray the actions involved when it falls onto a surface. This is made realistical by using springs and point masses to resolve the physical effects or to be able to handle collisions with itself and another object. 
+            In this case my main object involved using a cloth to portray the actions involved when it falls onto a surface. This is 
+            made realistical by using springs and point masses to resolve the physical effects or to be able to handle collisions with 
+            itself and another object. 
         </p>
 
     <h2 align="middle">Part 1: Springs and Masses</h2>
@@ -126,7 +128,8 @@
         <p>In this part I adjusted the cloth's behavior to follow the real interactions between two objects. For the first part I had
             the cloth fall onto a sphere and computed the new position for the cloth. This was done by finding the tangent point 
             between a point mass position and the sphere's origin. Once that was found I corrected the position of the cloth by taking 
-            into account the friction between the two objects. This part acquired the following results of a cloth ontop of a sphere and on the plane. We see that with a spring constant of 5000 there is a normal smooth behavior when the cloth comes in 
+            into account the friction between the two objects. This part acquired the following results of a cloth ontop of a sphere 
+            and on the plane. We see that with a spring constant of 5000 there is a normal smooth behavior when the cloth comes in 
             contact with the sphere. However, at 500 the cloth seems to stretch further downwards into the sphere and with a spring 
             constant of 50000 the cloth looks stiff compared to the other two images. 
         </p>
@@ -222,8 +225,10 @@
         <p> This portion of the project combined the shader programs by using opengl. The shaders programs consists of a .frag and 
             .vert files which are used to piece together the final output color for a scene. In this case the .vert file reads all 
             vertices and writes a corresponding interpolated color by using barycentric coordinates. While the .frag file reads these 
-            interpolated values and writes to every pixel a final color. For this part I created 5 different types of shaders. They were a diffuse shader, a Blinn-Phong shader, texture mapping, displacement and bump mapping, and finally a mirror shader. 
-            The Blinn-phong shader displaced below is how it will look like if I only output the ambient, specular, and diffuse components individually. Combing these three effects together produces the Blinn-Phong effect by summing over the three 
+            interpolated values and writes to every pixel a final color. For this part I created 5 different types of shaders. They 
+            were a diffuse shader, a Blinn-Phong shader, texture mapping, displacement and bump mapping, and finally a mirror shader. 
+            The Blinn-phong shader displaced below is how it will look like if I only output the ambient, specular, and diffuse 
+            components individually. Combing these three effects together produces the Blinn-Phong effect by summing over the three 
             different vectors produced from each effect. 
         </p>
         <br>
